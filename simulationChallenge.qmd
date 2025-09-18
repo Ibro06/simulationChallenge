@@ -248,6 +248,7 @@ sim_data
 #| label: simple-sim-python
 #| fig-cap: Python simulation of coin flip game
 #| echo: true
+#| eval: false
 
 import numpy as np
 import pandas as pd
@@ -357,6 +358,7 @@ time_series_data
 #| label: timeseries-sim-python
 #| fig-cap: Python time-series simulation of account balance
 #| echo: true
+#| eval: false
 
 import numpy as np
 import pandas as pd
@@ -498,6 +500,7 @@ summary_stats
 #| label: distribution-sim-python
 #| fig-cap: Python probability distribution of final balances
 #| echo: true
+#| eval: false
 
 import numpy as np
 import pandas as pd
