@@ -2,7 +2,13 @@
 title: "Investment Strategy Analysis"
 subtitle: "Monte Carlo Simulation of Multiplicative Investment Games"
 format:
-  html: default
+  html: 
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: false
+    embed-resources: true
   pdf: default
 execute:
   echo: false
@@ -11,13 +17,19 @@ execute:
 
 # Investment Strategy Analysis: Monte Carlo Simulation
 
+::: {.callout-abstract}
 ## Executive Summary
 
 This analysis examines two investment strategies using Monte Carlo simulation to understand the long-term behavior of multiplicative investment games. We investigate how expected value calculations can be misleading when applied to real-world investment scenarios with compounding effects.
 
+**Key Finding**: Despite a positive 5% expected return, most simulations result in significant losses, demonstrating the critical importance of understanding risk distributions rather than relying solely on expected values.
+:::
+
 ## The Investment Game
 
-### Strategy 1: Full Investment Strategy
+::: {.panel-tabset}
+
+### Strategy 1: Full Investment
 
 Consider an investment game where you start with $1,000. Each year, a coin is flipped:
 - **Heads (50% probability)**: Your entire balance increases by 50%
@@ -25,12 +37,18 @@ Consider an investment game where you start with $1,000. Each year, a coin is fl
 
 This process continues annually from age 25 to 55 (30 years).
 
-### Strategy 2: Partial Investment Strategy
+**Risk Profile**: High volatility with potential for massive gains or significant losses.
+
+### Strategy 2: Partial Investment
 
 In this modified approach, you must invest exactly 50% of your current balance each year:
 - **Heads (50% probability)**: Your invested amount increases by 50%
 - **Tails (50% probability)**: Your invested amount decreases by 40%
 - The remaining 50% of your balance remains untouched
+
+**Risk Profile**: Lower volatility with capital preservation focus.
+
+:::
 
 ## Analysis Framework
 
@@ -436,4 +454,11 @@ This Monte Carlo analysis reveals the counter-intuitive nature of multiplicative
 The comparison between full investment and partial investment strategies demonstrates how position sizing can significantly impact risk-return profiles, highlighting the importance of strategic portfolio management in real-world investment scenarios.
 
 **Key Takeaway**: Expected value alone is insufficient for investment decisions - understanding the full distribution of outcomes is crucial for risk management.
+
+### Strategic Recommendations
+
+1. **For Conservative Investors**: Choose Strategy 2 for better capital preservation
+2. **For Risk-Tolerant Investors**: Strategy 1 offers higher potential rewards
+3. **For All Investors**: Always analyze the full distribution of outcomes, not just expected values
+4. **Portfolio Management**: Consider position sizing and diversification strategies
 :::
