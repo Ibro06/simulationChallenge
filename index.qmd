@@ -67,9 +67,13 @@ cat("Expected value: $", expected_value, "\n")
 cat("Expected return: ", (expected_value - initial_balance) / initial_balance * 100, "%\n")
 ```
 
-### Key Insight: Expected Value vs. Reality
+::: {.callout-important}
+## Key Insight: Expected Value vs. Reality
 
 The expected value after one coin flip is **$1,050**, representing a **5% expected return**. This suggests positive expected outcomes. However, as we'll see, this theoretical calculation can be misleading when applied to long-term multiplicative processes.
+
+**Counter-Intuitive Finding**: Despite positive expected value, most simulations result in losses due to the multiplicative nature of compounding.
+:::
 
 ## Single Simulation Analysis
 
@@ -372,13 +376,15 @@ print(comparison_summary)
 
 ## Key Findings
 
-### Risk-Return Analysis
+::: {.callout-warning}
+## Risk-Return Analysis
 
 1. **Expected Value Misleading**: Despite a positive 5% expected return, most simulations result in losses below the initial investment.
 
 2. **Extreme Volatility**: Final balances range from near zero to potentially millions, demonstrating the high-risk nature of multiplicative investment strategies.
 
 3. **Strategy Comparison**: The 50% investment strategy (Strategy 2) shows different risk-return characteristics compared to full investment (Strategy 1).
+:::
 
 ### Probability Results
 
@@ -394,8 +400,12 @@ This analysis demonstrates several critical concepts:
 3. **Risk Management**: Position sizing and diversification are crucial for managing investment risk
 4. **Simulation Power**: Monte Carlo methods reveal the true distribution of possible outcomes
 
+::: {.callout-tip}
 ## Conclusion
 
 This Monte Carlo analysis reveals the counter-intuitive nature of multiplicative investment processes. While theoretical expected value calculations suggest positive returns, the reality of compounding effects leads to extreme outcomes with high downside risk. Understanding these dynamics is essential for making informed investment decisions and implementing appropriate risk management strategies.
 
 The comparison between full investment and partial investment strategies demonstrates how position sizing can significantly impact risk-return profiles, highlighting the importance of strategic portfolio management in real-world investment scenarios.
+
+**Key Takeaway**: Expected value alone is insufficient for investment decisions - understanding the full distribution of outcomes is crucial for risk management.
+:::
