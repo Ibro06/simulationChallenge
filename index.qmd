@@ -386,10 +386,19 @@ print(comparison_summary)
 3. **Strategy Comparison**: The 50% investment strategy (Strategy 2) shows different risk-return characteristics compared to full investment (Strategy 1).
 :::
 
-### Probability Results
+::: {.callout-note}
+## Probability Results
 
-- **Strategy 1**: Probability of ending above $1,000 is approximately 0.XX (XX%)
-- **Strategy 2**: Probability of ending above $10,000 is approximately 0.XX (XX%)
+- **Strategy 1 (Full Investment)**:
+  - Probability of ending above $1,000: **30%**
+  - Probability of ending above $10,000: **2%**
+
+- **Strategy 2 (50% Investment)**:
+  - Probability of ending above $1,000: **39%**
+  - Probability of ending above $10,000: **0%**
+
+**Key Insight**: Strategy 2 is safer for preserving capital but offers no chance of high returns.
+:::
 
 ### Strategic Implications
 
