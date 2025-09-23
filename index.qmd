@@ -100,34 +100,61 @@ ev_data <- tibble(
   Initial_Balance = initial_balance
 )
 
-# Create comprehensive expected value plot
+# Create enhanced expected value plot with better design
 ggplot(ev_data, aes(x = Years)) +
-  geom_line(aes(y = Expected_Value, color = "Expected Value (Arithmetic)"), linewidth = 1.5) +
-  geom_line(aes(y = Geometric_Mean, color = "Geometric Mean"), linewidth = 1.5) +
-  geom_hline(yintercept = initial_balance, linetype = "dashed", color = "red", alpha = 0.7) +
-  geom_point(aes(y = Expected_Value), color = "#2E86AB", size = 3) +
-  geom_point(aes(y = Geometric_Mean), color = "#F24236", size = 3) +
+  # Add background ribbon to show the divergence
+  geom_ribbon(aes(ymin = Geometric_Mean, ymax = Expected_Value), 
+              fill = "lightblue", alpha = 0.3) +
+  # Add the lines with proper linewidth
+  geom_line(aes(y = Expected_Value, color = "Expected Value (Arithmetic)"), 
+            linewidth = 2.5, alpha = 0.9) +
+  geom_line(aes(y = Geometric_Mean, color = "Geometric Mean"), 
+            linewidth = 2.5, alpha = 0.9) +
+  # Add reference line for initial balance
+  geom_hline(yintercept = initial_balance, linetype = "dashed", 
+             color = "darkred", linewidth = 1.2, alpha = 0.8) +
+  # Add data points with better styling
+  geom_point(aes(y = Expected_Value), color = "#1f77b4", size = 4, alpha = 0.8) +
+  geom_point(aes(y = Geometric_Mean), color = "#d62728", size = 4, alpha = 0.8) +
+  # Add annotations for key insights
+  annotate("text", x = 8, y = 15000, 
+           label = "Arithmetic Mean\n(Overestimates)", 
+           color = "#1f77b4", size = 3.5, fontface = "bold") +
+  annotate("text", x = 8, y = 800, 
+           label = "Geometric Mean\n(Realistic)", 
+           color = "#d62728", size = 3.5, fontface = "bold") +
+  annotate("text", x = 2, y = 1100, 
+           label = "Initial Balance\n$1,000", 
+           color = "darkred", size = 3, fontface = "bold") +
+  # Scales and formatting
   scale_y_continuous(labels = scales::dollar_format(), 
                      trans = "log10",
-                     breaks = c(100, 500, 1000, 2000, 5000, 10000, 20000)) +
-  scale_color_manual(values = c("Expected Value (Arithmetic)" = "#2E86AB", 
-                               "Geometric Mean" = "#F24236")) +
+                     breaks = c(100, 500, 1000, 2000, 5000, 10000, 20000, 50000)) +
+  scale_x_continuous(breaks = 1:10) +
+  scale_color_manual(values = c("Expected Value (Arithmetic)" = "#1f77b4", 
+                               "Geometric Mean" = "#d62728")) +
   labs(
-    title = "Expected Value Analysis: Arithmetic vs. Geometric Mean",
-    subtitle = "Multiplicative processes require geometric mean for accurate long-term predictions",
+    title = "Expected Value Analysis: The Arithmetic vs. Geometric Mean Paradox",
+    subtitle = "Why positive expected value can lead to losses in multiplicative processes",
     x = "Number of Years (Coin Flips)",
     y = "Expected Balance (Log Scale)",
     color = "Calculation Method",
-    caption = "Red dashed line shows initial balance ($1,000) | Log scale reveals the divergence"
+    caption = "Red dashed line: Initial balance | Blue ribbon: Divergence between methods"
   ) +
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 14, face = "bold", color = "#2C3E50"),
-    plot.subtitle = element_text(size = 12, color = "gray50"),
-    axis.title = element_text(size = 11, face = "bold"),
+    plot.title = element_text(size = 16, face = "bold", color = "#2C3E50", hjust = 0.5),
+    plot.subtitle = element_text(size = 12, color = "gray60", hjust = 0.5),
+    axis.title = element_text(size = 12, face = "bold", color = "#2C3E50"),
+    axis.text = element_text(size = 10, color = "#2C3E50"),
     legend.position = "bottom",
-    panel.grid.major = element_line(color = "gray90", size = 0.5),
-    panel.grid.minor = element_line(color = "gray95", size = 0.3)
+    legend.title = element_text(size = 11, face = "bold"),
+    legend.text = element_text(size = 10),
+    panel.grid.major = element_line(color = "gray85", linewidth = 0.5),
+    panel.grid.minor = element_line(color = "gray92", linewidth = 0.3),
+    panel.background = element_rect(fill = "white", color = NA),
+    plot.background = element_rect(fill = "white", color = NA),
+    plot.margin = margin(20, 20, 20, 20)
   )
 
 # Detailed expected value calculations
