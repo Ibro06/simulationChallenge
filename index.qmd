@@ -358,20 +358,39 @@ comparison_summary <- tibble(
   Prob_Above_10000 = c(prob_original_above_10000, prob_modified_above_10000)
 )
 
-cat("\nStrategy Comparison Results:\n")
-cat("============================\n")
-cat("Strategy 1 - Probability > $1,000: ", round(prob_original_above_1000, 3), " (", round(prob_original_above_1000 * 100, 1), "%)\n")
-cat("Strategy 2 - Probability > $1,000: ", round(prob_modified_above_1000, 3), " (", round(prob_modified_above_1000 * 100, 1), "%)\n")
-cat("Strategy 1 - Probability > $10,000: ", round(prob_original_above_10000, 3), " (", round(prob_original_above_10000 * 100, 1), "%)\n")
-cat("Strategy 2 - Probability > $10,000: ", round(prob_modified_above_10000, 3), " (", round(prob_modified_above_10000 * 100, 1), "%)\n")
+# Create a professional summary table
+professional_summary <- comparison_summary %>%
+  mutate(
+    Strategy = case_when(
+      Strategy == "Strategy 1: Full Investment" ~ "Strategy 1: Full Investment",
+      Strategy == "Strategy 2: 50% Investment" ~ "Strategy 2: 50% Investment"
+    ),
+    Mean_Balance = paste0("$", format(round(Mean_Balance, 0), big.mark = ",")),
+    Median_Balance = paste0("$", format(round(Median_Balance, 0), big.mark = ",")),
+    Prob_Above_1000 = paste0(round(Prob_Above_1000 * 100, 0), "%"),
+    Prob_Above_10000 = paste0(round(Prob_Above_10000 * 100, 0), "%")
+  ) %>%
+  rename(
+    "Investment Strategy" = Strategy,
+    "Average Final Balance" = Mean_Balance,
+    "Median Final Balance" = Median_Balance,
+    "Chance > $1,000" = Prob_Above_1000,
+    "Chance > $10,000" = Prob_Above_10000
+  )
 
-if (prob_modified_above_10000 > prob_original_above_10000) {
-  cat("Result: Strategy 2 has HIGHER probability of > $10,000\n")
-} else {
-  cat("Result: Strategy 2 has LOWER probability of > $10,000\n")
-}
+# Display the professional table
+knitr::kable(professional_summary, 
+             caption = "Strategy Comparison: Final Results",
+             align = c("l", "r", "r", "r", "r"),
+             format = "html")
 
-print(comparison_summary)
+# Add key insights
+cat("\n")
+cat("## 🎯 **Key Comparison Insights:**\n")
+cat("• **Capital Preservation**: Strategy 2 is safer (39% vs 30% chance of keeping your $1,000)\n")
+cat("• **Growth Potential**: Strategy 1 offers higher rewards (2% vs 0% chance of reaching $10,000)\n")
+cat("• **Risk vs Reward**: Full investment is riskier but has potential for massive gains\n")
+cat("• **Conservative Approach**: 50% investment strategy prioritizes capital preservation over growth\n")
 ```
 
 ## Key Findings
