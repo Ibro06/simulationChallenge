@@ -100,61 +100,32 @@ ev_data <- tibble(
   Initial_Balance = initial_balance
 )
 
-# Create enhanced expected value plot with better design
+# Create simple, clear expected value comparison
 ggplot(ev_data, aes(x = Years)) +
-  # Add background ribbon to show the divergence
-  geom_ribbon(aes(ymin = Geometric_Mean, ymax = Expected_Value), 
-              fill = "lightblue", alpha = 0.3) +
-  # Add the lines with proper linewidth
-  geom_line(aes(y = Expected_Value, color = "Expected Value (Arithmetic)"), 
-            linewidth = 2.5, alpha = 0.9) +
-  geom_line(aes(y = Geometric_Mean, color = "Geometric Mean"), 
-            linewidth = 2.5, alpha = 0.9) +
-  # Add reference line for initial balance
-  geom_hline(yintercept = initial_balance, linetype = "dashed", 
-             color = "darkred", linewidth = 1.2, alpha = 0.8) +
-  # Add data points with better styling
-  geom_point(aes(y = Expected_Value), color = "#1f77b4", size = 4, alpha = 0.8) +
-  geom_point(aes(y = Geometric_Mean), color = "#d62728", size = 4, alpha = 0.8) +
-  # Add annotations for key insights
-  annotate("text", x = 8, y = 15000, 
-           label = "Arithmetic Mean\n(Overestimates)", 
-           color = "#1f77b4", size = 3.5, fontface = "bold") +
-  annotate("text", x = 8, y = 800, 
-           label = "Geometric Mean\n(Realistic)", 
-           color = "#d62728", size = 3.5, fontface = "bold") +
-  annotate("text", x = 2, y = 1100, 
-           label = "Initial Balance\n$1,000", 
-           color = "darkred", size = 3, fontface = "bold") +
-  # Scales and formatting
-  scale_y_continuous(labels = scales::dollar_format(), 
-                     trans = "log10",
-                     breaks = c(100, 500, 1000, 2000, 5000, 10000, 20000, 50000)) +
+  # Simple lines
+  geom_line(aes(y = Expected_Value), color = "blue", linewidth = 2) +
+  geom_line(aes(y = Geometric_Mean), color = "red", linewidth = 2) +
+  # Reference line
+  geom_hline(yintercept = initial_balance, linetype = "dashed", color = "black", linewidth = 1) +
+  # Simple points
+  geom_point(aes(y = Expected_Value), color = "blue", size = 3) +
+  geom_point(aes(y = Geometric_Mean), color = "red", size = 3) +
+  # Clean scales
+  scale_y_continuous(labels = scales::dollar_format()) +
   scale_x_continuous(breaks = 1:10) +
-  scale_color_manual(values = c("Expected Value (Arithmetic)" = "#1f77b4", 
-                               "Geometric Mean" = "#d62728")) +
   labs(
-    title = "Expected Value Analysis: The Arithmetic vs. Geometric Mean Paradox",
-    subtitle = "Why positive expected value can lead to losses in multiplicative processes",
-    x = "Number of Years (Coin Flips)",
-    y = "Expected Balance (Log Scale)",
-    color = "Calculation Method",
-    caption = "Red dashed line: Initial balance | Blue ribbon: Divergence between methods"
+    title = "Expected Value vs. Reality",
+    subtitle = "Blue line shows misleading arithmetic mean, Red line shows realistic geometric mean",
+    x = "Years",
+    y = "Expected Balance ($)",
+    caption = "Black dashed line: Initial $1,000 investment"
   ) +
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 16, face = "bold", color = "#2C3E50", hjust = 0.5),
-    plot.subtitle = element_text(size = 12, color = "gray60", hjust = 0.5),
-    axis.title = element_text(size = 12, face = "bold", color = "#2C3E50"),
-    axis.text = element_text(size = 10, color = "#2C3E50"),
-    legend.position = "bottom",
-    legend.title = element_text(size = 11, face = "bold"),
-    legend.text = element_text(size = 10),
-    panel.grid.major = element_line(color = "gray85", linewidth = 0.5),
-    panel.grid.minor = element_line(color = "gray92", linewidth = 0.3),
-    panel.background = element_rect(fill = "white", color = NA),
-    plot.background = element_rect(fill = "white", color = NA),
-    plot.margin = margin(20, 20, 20, 20)
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 11),
+    axis.title = element_text(size = 11, face = "bold"),
+    legend.position = "none"
   )
 
 # Detailed expected value calculations
