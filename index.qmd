@@ -278,7 +278,94 @@ cat("Probability that final balance > $50,000: ", round(prob_above_50000, 3), " 
 print(probability_summary)
 ```
 
-## Strategy Comparison: Partial Investment Approach
+## Strategy 2 Analysis: 50% Investment Distribution
+
+Let's examine the distribution of Strategy 2 results separately:
+
+```{r}
+#| fig-cap: Distribution of Strategy 2 final balances (50% investment rule)
+#| echo: false
+
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(ggplot2))
+
+# Set seed for reproducibility
+set.seed(999)
+
+# Parameters for Strategy 2
+initial_balance <- 1000
+start_age <- 25
+end_age <- 55
+n_years <- end_age - start_age
+n_sims <- 100
+
+# Function to simulate Strategy 2 (50% betting rule)
+simulate_strategy_2 <- function(initial, years) {
+  balance <- initial
+  for (i in 1:years) {
+    # Bet exactly 50% of current balance
+    bet_amount <- balance * 0.5
+    remaining_balance <- balance - bet_amount
+    
+    coin_flip <- rbinom(1, 1, 0.5)
+    if (coin_flip == 1) {
+      # Win: bet amount increases by 50%
+      bet_result <- bet_amount * 1.5
+    } else {
+      # Lose: bet amount decreases by 40%
+      bet_result <- bet_amount * 0.6
+    }
+    
+    # New balance = remaining balance + bet result
+    balance <- remaining_balance + bet_result
+  }
+  return(balance)
+}
+
+# Run 100 simulations for Strategy 2
+strategy_2_balances <- replicate(n_sims, simulate_strategy_2(initial_balance, n_years))
+
+# Create data frame for Strategy 2
+strategy_2_results <- tibble(
+  sim_num = 1:n_sims,
+  final_balance = strategy_2_balances
+)
+
+# Create Strategy 2 histogram
+ggplot(strategy_2_results, aes(x = final_balance)) +
+  geom_histogram(bins = 15, fill = "orange", alpha = 0.8, color = "black") +
+  geom_vline(xintercept = initial_balance, color = "red", linetype = "dashed", linewidth = 1) +
+  geom_vline(xintercept = mean(strategy_2_balances), color = "darkorange", linetype = "solid", linewidth = 1) +
+  labs(
+    title = "Distribution of Final Balances: Strategy 2 (50% Investment)",
+    subtitle = "100 Simulations - Conservative Approach",
+    x = "Final Balance at Age 55 ($)",
+    y = "Frequency",
+    caption = "Red line: Initial balance ($1,000) | Orange line: Mean final balance"
+  ) +
+  scale_x_continuous(labels = scales::dollar_format()) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 12, color = "gray50")
+  )
+
+# Summary statistics for Strategy 2
+strategy_2_summary <- strategy_2_results %>%
+  summarise(
+    mean_balance = mean(final_balance),
+    median_balance = median(final_balance),
+    min_balance = min(final_balance),
+    max_balance = max(final_balance),
+    prob_above_initial = mean(final_balance > initial_balance),
+    prob_above_10000 = mean(final_balance > 10000)
+  )
+
+cat("\nStrategy 2 Summary Statistics:\n")
+print(strategy_2_summary)
+```
+
+## Strategy Comparison: Side-by-Side Analysis
 
 Now let's analyze Strategy 2 (50% betting rule):
 
@@ -409,6 +496,66 @@ cat("• **Capital Preservation**: Strategy 2 is safer (39% vs 30% chance of kee
 cat("• **Growth Potential**: Strategy 1 offers higher rewards (2% vs 0% chance of reaching $10,000)\n")
 cat("• **Risk vs Reward**: Full investment is riskier but has potential for massive gains\n")
 cat("• **Conservative Approach**: 50% investment strategy prioritizes capital preservation over growth\n")
+```
+
+## Risk-Return Analysis
+
+Let's create a comprehensive risk-return visualization:
+
+```{r}
+#| fig-cap: Risk-Return scatter plot comparing both strategies
+#| echo: false
+
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(ggplot2))
+
+# Combine all simulation data for risk-return analysis
+combined_data <- tibble(
+  strategy = rep(c("Strategy 1: Full Investment", "Strategy 2: 50% Investment"), each = 100),
+  final_balance = c(final_balances, strategy_2_balances),
+  log_return = log(c(final_balances, strategy_2_balances) / 1000)
+) %>%
+  group_by(strategy) %>%
+  mutate(
+    risk = sd(final_balance),
+    return = mean(final_balance)
+  )
+
+# Create risk-return scatter plot
+ggplot(combined_data, aes(x = risk, y = return, color = strategy)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_text(aes(label = strategy), hjust = -0.1, vjust = 0.5, size = 3.5) +
+  labs(
+    title = "Risk-Return Analysis: Strategy Comparison",
+    subtitle = "Higher risk strategies offer higher potential returns",
+    x = "Risk (Standard Deviation of Final Balances)",
+    y = "Average Return (Mean Final Balance)",
+    caption = "Each point represents 100 simulations of each strategy"
+  ) +
+  scale_x_continuous(labels = scales::dollar_format()) +
+  scale_y_continuous(labels = scales::dollar_format()) +
+  scale_color_manual(values = c("Strategy 1: Full Investment" = "steelblue", 
+                               "Strategy 2: 50% Investment" = "orange")) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 12, color = "gray50"),
+    legend.position = "none"
+  )
+
+# Summary statistics for risk-return analysis
+risk_return_summary <- combined_data %>%
+  group_by(strategy) %>%
+  summarise(
+    mean_return = mean(final_balance),
+    risk = sd(final_balance),
+    min_return = min(final_balance),
+    max_return = max(final_balance),
+    coefficient_of_variation = risk / mean_return
+  )
+
+cat("\nRisk-Return Summary:\n")
+print(risk_return_summary)
 ```
 
 ## Key Findings
