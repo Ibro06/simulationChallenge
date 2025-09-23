@@ -539,7 +539,7 @@ cat("• **Conservative Approach**: 50% investment strategy prioritizes capital 
 Let's create a comprehensive risk-return visualization:
 
 ```{r}
-#| fig-cap: Risk-Return scatter plot comparing both strategies
+#| fig-cap: Enhanced Risk-Return Analysis with confidence intervals and distribution comparison
 #| echo: false
 
 suppressPackageStartupMessages(library(tidyverse))
@@ -557,29 +557,7 @@ combined_data <- tibble(
     return = mean(final_balance)
   )
 
-# Create risk-return scatter plot
-ggplot(combined_data, aes(x = risk, y = return, color = strategy)) +
-  geom_point(size = 3, alpha = 0.7) +
-  geom_text(aes(label = strategy), hjust = -0.1, vjust = 0.5, size = 3.5) +
-  labs(
-    title = "Risk-Return Analysis: Strategy Comparison",
-    subtitle = "Higher risk strategies offer higher potential returns",
-    x = "Risk (Standard Deviation of Final Balances)",
-    y = "Average Return (Mean Final Balance)",
-    caption = "Each point represents 100 simulations of each strategy"
-  ) +
-  scale_x_continuous(labels = scales::dollar_format()) +
-  scale_y_continuous(labels = scales::dollar_format()) +
-  scale_color_manual(values = c("Strategy 1: Full Investment" = "steelblue", 
-                               "Strategy 2: 50% Investment" = "orange")) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(size = 14, face = "bold"),
-    plot.subtitle = element_text(size = 12, color = "gray50"),
-    legend.position = "none"
-  )
-
-# Summary statistics for risk-return analysis
+# Create enhanced risk-return scatter plot with confidence intervals
 risk_return_summary <- combined_data %>%
   group_by(strategy) %>%
   summarise(
@@ -587,7 +565,85 @@ risk_return_summary <- combined_data %>%
     risk = sd(final_balance),
     min_return = min(final_balance),
     max_return = max(final_balance),
-    coefficient_of_variation = risk / mean_return
+    q25 = quantile(final_balance, 0.25),
+    q75 = quantile(final_balance, 0.75),
+    n = n()
+  )
+
+# Create enhanced risk-return plot
+ggplot(risk_return_summary, aes(x = risk, y = mean_return, color = strategy)) +
+  # Add confidence ellipses to show risk range
+  geom_point(size = 5, alpha = 0.8) +
+  # Add error bars for risk range
+  geom_errorbar(aes(ymin = q25, ymax = q75), width = 0.1, size = 1.2, alpha = 0.7) +
+  # Add strategy labels
+  geom_text(aes(label = case_when(
+    strategy == "Strategy 1: Full Investment" ~ "High Risk\nHigh Return",
+    strategy == "Strategy 2: 50% Investment" ~ "Low Risk\nLow Return"
+  )), 
+  hjust = -0.1, vjust = 0.5, size = 3.5, fontface = "bold") +
+  # Add risk-return efficiency line
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray50", alpha = 0.5) +
+  # Add quadrant labels
+  annotate("text", x = max(risk_return_summary$risk) * 0.7, 
+           y = max(risk_return_summary$mean_return) * 0.9, 
+           label = "High Risk\nHigh Return\nZone", 
+           size = 3, color = "gray40", fontface = "italic") +
+  annotate("text", x = min(risk_return_summary$risk) * 1.1, 
+           y = min(risk_return_summary$mean_return) * 1.1, 
+           label = "Low Risk\nLow Return\nZone", 
+           size = 3, color = "gray40", fontface = "italic") +
+  labs(
+    title = "Risk-Return Analysis: Investment Strategy Comparison",
+    subtitle = "Higher risk strategies offer higher potential returns but with greater uncertainty",
+    x = "Risk (Standard Deviation of Final Balances)",
+    y = "Average Return (Mean Final Balance)",
+    caption = "Error bars show 25th-75th percentile range | Each strategy based on 100 simulations"
+  ) +
+  scale_x_continuous(labels = scales::dollar_format(), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_y_continuous(labels = scales::dollar_format(),
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_color_manual(values = c("Strategy 1: Full Investment" = "#2E86AB", 
+                               "Strategy 2: 50% Investment" = "#F24236")) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, face = "bold", color = "#2C3E50"),
+    plot.subtitle = element_text(size = 12, color = "gray50"),
+    axis.title = element_text(size = 11, face = "bold"),
+    axis.text = element_text(size = 10),
+    legend.position = "none",
+    panel.grid.major = element_line(color = "gray90", size = 0.5),
+    panel.grid.minor = element_line(color = "gray95", size = 0.3),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
+  )
+
+# Create additional risk-return visualization: Box plots
+ggplot(combined_data, aes(x = strategy, y = final_balance, fill = strategy)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = 21, outlier.fill = "white", outlier.color = "black") +
+  geom_jitter(width = 0.2, alpha = 0.4, size = 0.8) +
+  scale_y_continuous(labels = scales::dollar_format(), 
+                     trans = "log10",
+                     breaks = c(100, 1000, 10000, 100000, 1000000)) +
+  scale_fill_manual(values = c("Strategy 1: Full Investment" = "#2E86AB", 
+                              "Strategy 2: 50% Investment" = "#F24236")) +
+  labs(
+    title = "Distribution Comparison: Log Scale View",
+    subtitle = "Shows the extreme range differences between strategies",
+    x = "Investment Strategy",
+    y = "Final Balance (Log Scale)",
+    caption = "Each dot represents one simulation | Box shows 25th-75th percentile range"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", color = "#2C3E50"),
+    plot.subtitle = element_text(size = 12, color = "gray50"),
+    axis.title = element_text(size = 11, face = "bold"),
+    axis.text = element_text(size = 10),
+    legend.position = "none",
+    panel.grid.major.y = element_line(color = "gray90", size = 0.5),
+    panel.grid.minor.y = element_line(color = "gray95", size = 0.3)
   )
 
 # Create formatted risk-return table
@@ -601,7 +657,7 @@ risk_return_table <- risk_return_summary %>%
     Risk = paste0("$", format(round(risk, 0), big.mark = ",")),
     Min_Return = paste0("$", format(round(min_return, 1), big.mark = ",")),
     Max_Return = paste0("$", format(round(max_return, 0), big.mark = ",")),
-    Risk_Return_Ratio = paste0(round(coefficient_of_variation, 2))
+    Risk_Return_Ratio = paste0(round(risk / mean_return, 2))
   ) %>%
   select(Strategy, Mean_Return, Risk, Min_Return, Max_Return, Risk_Return_Ratio) %>%
   rename(
