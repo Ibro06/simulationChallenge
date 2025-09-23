@@ -520,6 +520,20 @@ cat("• **Risk vs Reward**: Full investment is riskier but has potential for ma
 cat("• **Conservative Approach**: 50% investment strategy prioritizes capital preservation over growth\n")
 ```
 
+::: {.callout-tip}
+## 🎯 Key Comparison Insights
+
+**Capital Preservation**: Strategy 2 is safer (39% vs 30% chance of keeping your $1,000)
+
+**Growth Potential**: Strategy 1 offers higher rewards (2% vs 0% chance of reaching $10,000)
+
+**Risk vs Reward**: Full investment is riskier but has potential for massive gains
+
+**Conservative Approach**: 50% investment strategy prioritizes capital preservation over growth
+
+**Strategic Trade-off**: Choose Strategy 1 for maximum upside potential, Strategy 2 for capital protection
+:::
+
 ## Risk-Return Analysis
 
 Let's create a comprehensive risk-return visualization:
