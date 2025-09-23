@@ -361,8 +361,30 @@ strategy_2_summary <- strategy_2_results %>%
     prob_above_10000 = mean(final_balance > 10000)
   )
 
-cat("\nStrategy 2 Summary Statistics:\n")
-print(strategy_2_summary)
+# Create formatted table for Strategy 2
+strategy_2_table <- strategy_2_summary %>%
+  mutate(
+    Mean_Balance = paste0("$", format(round(mean_balance, 0), big.mark = ",")),
+    Median_Balance = paste0("$", format(round(median_balance, 0), big.mark = ",")),
+    Min_Balance = paste0("$", format(round(min_balance, 1), big.mark = ",")),
+    Max_Balance = paste0("$", format(round(max_balance, 0), big.mark = ",")),
+    Prob_Above_Initial = paste0(round(prob_above_initial * 100, 0), "%"),
+    Prob_Above_10000 = paste0(round(prob_above_10000 * 100, 0), "%")
+  ) %>%
+  select(Mean_Balance, Median_Balance, Min_Balance, Max_Balance, Prob_Above_Initial, Prob_Above_10000) %>%
+  rename(
+    "Mean Balance" = Mean_Balance,
+    "Median Balance" = Median_Balance,
+    "Minimum Balance" = Min_Balance,
+    "Maximum Balance" = Max_Balance,
+    "Chance > $1,000" = Prob_Above_Initial,
+    "Chance > $10,000" = Prob_Above_10000
+  )
+
+knitr::kable(strategy_2_table,
+             caption = "Strategy 2 Summary Statistics (50% Investment Rule)",
+             align = c("r", "r", "r", "r", "r", "r"),
+             format = "html")
 ```
 
 ## Strategy Comparison: Side-by-Side Analysis
@@ -554,8 +576,33 @@ risk_return_summary <- combined_data %>%
     coefficient_of_variation = risk / mean_return
   )
 
-cat("\nRisk-Return Summary:\n")
-print(risk_return_summary)
+# Create formatted risk-return table
+risk_return_table <- risk_return_summary %>%
+  mutate(
+    Strategy = case_when(
+      strategy == "Strategy 1: Full Investment" ~ "Strategy 1: Full Investment",
+      strategy == "Strategy 2: 50% Investment" ~ "Strategy 2: 50% Investment"
+    ),
+    Mean_Return = paste0("$", format(round(mean_return, 0), big.mark = ",")),
+    Risk = paste0("$", format(round(risk, 0), big.mark = ",")),
+    Min_Return = paste0("$", format(round(min_return, 1), big.mark = ",")),
+    Max_Return = paste0("$", format(round(max_return, 0), big.mark = ",")),
+    Risk_Return_Ratio = paste0(round(coefficient_of_variation, 2))
+  ) %>%
+  select(Strategy, Mean_Return, Risk, Min_Return, Max_Return, Risk_Return_Ratio) %>%
+  rename(
+    "Investment Strategy" = Strategy,
+    "Mean Return" = Mean_Return,
+    "Risk (Std Dev)" = Risk,
+    "Minimum Return" = Min_Return,
+    "Maximum Return" = Max_Return,
+    "Risk/Return Ratio" = Risk_Return_Ratio
+  )
+
+knitr::kable(risk_return_table,
+             caption = "Risk-Return Analysis Summary",
+             align = c("l", "r", "r", "r", "r", "r"),
+             format = "html")
 ```
 
 ## Key Findings
