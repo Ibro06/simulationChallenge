@@ -54,43 +54,127 @@ In this modified approach, you must invest exactly 50% of your current balance e
 
 ### Expected Value Analysis
 
-Let's first examine the theoretical expected value after one coin flip for Strategy 1:
+Let's establish the mathematical foundation for our investment strategies by examining expected values across multiple time horizons:
 
 ```{r}
-#| fig-cap: Expected value calculation for one coin flip
+#| fig-cap: Comprehensive expected value analysis across multiple time horizons
+#| echo: false
+
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(ggplot2))
 
 # Set seed for reproducibility
 set.seed(123)
 
-# Initial balance
+# Parameters
 initial_balance <- 1000
-
-# After one coin flip:
-# Heads (50% probability): Balance = 1000 * 1.5 = 1500
-# Tails (50% probability): Balance = 1000 * 0.6 = 600
-
-# Expected value calculation
 prob_heads <- 0.5
 prob_tails <- 0.5
-balance_heads <- initial_balance * 1.5
-balance_tails <- initial_balance * 0.6
+gain_factor <- 1.5
+loss_factor <- 0.6
 
-expected_value <- prob_heads * balance_heads + prob_tails * balance_tails
+# Single coin flip analysis
+balance_heads <- initial_balance * gain_factor
+balance_tails <- initial_balance * loss_factor
+expected_value_1 <- prob_heads * balance_heads + prob_tails * balance_tails
 
-cat("Expected Value Analysis:\n")
-cat("Initial balance: $", initial_balance, "\n")
-cat("Balance after heads (50% gain): $", balance_heads, "\n")
-cat("Balance after tails (40% loss): $", balance_tails, "\n")
-cat("Expected value: $", expected_value, "\n")
-cat("Expected return: ", (expected_value - initial_balance) / initial_balance * 100, "%\n")
+# Multiple coin flips analysis (up to 10 years)
+years <- 1:10
+expected_values <- numeric(length(years))
+geometric_means <- numeric(length(years))
+
+for (i in 1:length(years)) {
+  n <- years[i]
+  # Expected value after n coin flips (multiplicative)
+  expected_values[i] <- initial_balance * ((prob_heads * gain_factor + prob_tails * loss_factor)^n)
+  
+  # Geometric mean (more appropriate for multiplicative processes)
+  geometric_means[i] <- initial_balance * ((gain_factor^prob_heads * loss_factor^prob_tails)^n)
+}
+
+# Create expected value comparison data
+ev_data <- tibble(
+  Years = years,
+  Expected_Value = expected_values,
+  Geometric_Mean = geometric_means,
+  Initial_Balance = initial_balance
+)
+
+# Create comprehensive expected value plot
+ggplot(ev_data, aes(x = Years)) +
+  geom_line(aes(y = Expected_Value, color = "Expected Value (Arithmetic)"), linewidth = 1.5) +
+  geom_line(aes(y = Geometric_Mean, color = "Geometric Mean"), linewidth = 1.5) +
+  geom_hline(yintercept = initial_balance, linetype = "dashed", color = "red", alpha = 0.7) +
+  geom_point(aes(y = Expected_Value), color = "#2E86AB", size = 3) +
+  geom_point(aes(y = Geometric_Mean), color = "#F24236", size = 3) +
+  scale_y_continuous(labels = scales::dollar_format(), 
+                     trans = "log10",
+                     breaks = c(100, 500, 1000, 2000, 5000, 10000, 20000)) +
+  scale_color_manual(values = c("Expected Value (Arithmetic)" = "#2E86AB", 
+                               "Geometric Mean" = "#F24236")) +
+  labs(
+    title = "Expected Value Analysis: Arithmetic vs. Geometric Mean",
+    subtitle = "Multiplicative processes require geometric mean for accurate long-term predictions",
+    x = "Number of Years (Coin Flips)",
+    y = "Expected Balance (Log Scale)",
+    color = "Calculation Method",
+    caption = "Red dashed line shows initial balance ($1,000) | Log scale reveals the divergence"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", color = "#2C3E50"),
+    plot.subtitle = element_text(size = 12, color = "gray50"),
+    axis.title = element_text(size = 11, face = "bold"),
+    legend.position = "bottom",
+    panel.grid.major = element_line(color = "gray90", size = 0.5),
+    panel.grid.minor = element_line(color = "gray95", size = 0.3)
+  )
+
+# Detailed expected value calculations
+cat("=== EXPECTED VALUE ANALYSIS ===\n\n")
+
+cat("Single Coin Flip Analysis:\n")
+cat("• Initial balance: $", initial_balance, "\n")
+cat("• Balance after heads (+50%): $", balance_heads, "\n")
+cat("• Balance after tails (-40%): $", balance_tails, "\n")
+cat("• Expected value (1 flip): $", round(expected_value_1, 2), "\n")
+cat("• Expected return (1 flip): ", round((expected_value_1 - initial_balance) / initial_balance * 100, 1), "%\n\n")
+
+cat("Multi-Year Expected Value Comparison:\n")
+ev_comparison <- ev_data %>%
+  mutate(
+    Years = as.character(Years),
+    Expected_Value_Formatted = paste0("$", format(round(Expected_Value, 0), big.mark = ",")),
+    Geometric_Mean_Formatted = paste0("$", format(round(Geometric_Mean, 0), big.mark = ",")),
+    Arithmetic_Return = paste0(round((Expected_Value - initial_balance) / initial_balance * 100, 1), "%"),
+    Geometric_Return = paste0(round((Geometric_Mean - initial_balance) / initial_balance * 100, 1), "%")
+  ) %>%
+  select(Years, Expected_Value_Formatted, Geometric_Mean_Formatted, Arithmetic_Return, Geometric_Return) %>%
+  rename(
+    "Years" = Years,
+    "Expected Value" = Expected_Value_Formatted,
+    "Geometric Mean" = Geometric_Mean_Formatted,
+    "Arithmetic Return" = Arithmetic_Return,
+    "Geometric Return" = Geometric_Return
+  )
+
+knitr::kable(ev_comparison,
+             caption = "Expected Value Analysis: Arithmetic vs. Geometric Mean Over Time",
+             align = c("c", "r", "r", "r", "r"),
+             format = "html")
 ```
 
 ::: {.callout-important}
-## Key Insight: Expected Value vs. Reality
+## Key Insight: The Expected Value Paradox
 
-The expected value after one coin flip is **$1,050**, representing a **5% expected return**. This suggests positive expected outcomes. However, as we'll see, this theoretical calculation can be misleading when applied to long-term multiplicative processes.
+**Counter-Intuitive Finding**: Despite positive expected value (+5% per flip), most simulations result in losses due to the multiplicative nature of compounding.
 
-**Counter-Intuitive Finding**: Despite positive expected value, most simulations result in losses due to the multiplicative nature of compounding.
+**Mathematical Explanation**:
+- **Arithmetic Mean**: $1,050 after 1 year (5% expected return)
+- **Geometric Mean**: $948 after 1 year (-5.2% expected return)
+- **Reality**: The geometric mean better predicts long-term outcomes in multiplicative processes
+
+**Why This Matters**: The arithmetic mean overestimates returns because it doesn't account for the compounding effect of losses.
 :::
 
 ## Single Simulation Analysis
