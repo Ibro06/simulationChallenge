@@ -5,7 +5,7 @@ format:
   html: default
   pdf: default
 execute:
-  echo: true
+  echo: false
   eval: true
 ---
 
@@ -39,9 +39,7 @@ In this modified approach, you must invest exactly 50% of your current balance e
 Let's first examine the theoretical expected value after one coin flip for Strategy 1:
 
 ```{r}
-#| label: expected-value-analysis
 #| fig-cap: Expected value calculation for one coin flip
-#| echo: true
 
 # Set seed for reproducibility
 set.seed(123)
@@ -78,9 +76,7 @@ The expected value after one coin flip is **$1,050**, representing a **5% expect
 Let's examine what happens in a single 30-year simulation:
 
 ```{r}
-#| label: single-simulation
 #| fig-cap: Single 30-year simulation of Strategy 1
-#| echo: true
 
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(ggplot2))
@@ -157,9 +153,7 @@ cat("Annualized return: ", round((final_balance/initial_balance)^(1/n_years) - 1
 To understand the true risk profile, we run 100 simulations:
 
 ```{r}
-#| label: monte-carlo-analysis
 #| fig-cap: Distribution of final balances from 100 simulations
-#| echo: true
 
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(ggplot2))
@@ -234,9 +228,7 @@ print(summary_stats)
 ## Probability Analysis
 
 ```{r}
-#| label: probability-analysis
 #| fig-cap: Probability analysis for various balance thresholds
-#| echo: true
 
 # Calculate probability that final balance > $1,000
 prob_above_1000 <- mean(final_balances > 1000)
@@ -269,9 +261,7 @@ print(probability_summary)
 Now let's analyze Strategy 2 (50% betting rule):
 
 ```{r}
-#| label: strategy-comparison
 #| fig-cap: Comparison of Strategy 1 vs Strategy 2
-#| echo: true
 
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(ggplot2))
